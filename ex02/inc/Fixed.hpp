@@ -11,7 +11,7 @@
 class Fixed {
 
 private:
-	int	_numValue;
+	int	_rawBits;
 	static const int _numOfFractBits;
 
 public:

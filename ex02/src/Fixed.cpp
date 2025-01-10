@@ -2,7 +2,7 @@
 #include "../inc/Fixed.hpp"
 #include <cmath>
 
-Fixed::Fixed() : _numValue(0){
+Fixed::Fixed() : _rawBits(0){
 	#ifdef DEBUG
 	std::cout << "Fixed dflt constructor called" << std::endl;
 	#endif
@@ -16,7 +16,7 @@ Fixed::Fixed(const int iNum) {
 		std::cout << "Fixed numer did overflow when being constructed through integer" << std::endl;
 	}
 	#endif
-	_numValue = iNum << _numOfFractBits;
+	_rawBits = iNum << _numOfFractBits;
 }
 
 Fixed::Fixed(const float fNum) {
@@ -24,7 +24,7 @@ Fixed::Fixed(const float fNum) {
 	std::cout << "Fixed float constructor called" << std::endl;
 	#endif
 
-	_numValue = static_cast<int>(std::round(fNum * (1 << _numOfFractBits)));
+	_rawBits = static_cast<int>(std::round(fNum * (1 << _numOfFractBits)));
 }
 
 Fixed::Fixed(const Fixed& fixed) {
@@ -47,7 +47,7 @@ Fixed& Fixed::operator=(const Fixed& fixed)
 	#endif
 	if (this != &fixed)
 	{
-		_numValue = fixed._numValue;
+		_rawBits = fixed._rawBits;
 	}
 	return (*this);
 }
@@ -64,32 +64,32 @@ std::ostream& operator<<(std::ostream& os, const Fixed& fixed)
 //////////////////////////////////////////////////////////////////////
 bool	Fixed::operator<(const Fixed& fixed) const
 {
-	return (_numValue < fixed._numValue);
+	return (_rawBits < fixed._rawBits);
 }
 
 bool	Fixed::operator>(const Fixed& fixed) const
 {
-	return (_numValue > fixed._numValue);
+	return (_rawBits > fixed._rawBits);
 }
 
 bool	Fixed::operator<=(const Fixed& fixed) const
 {
-	return (_numValue <= fixed._numValue);
+	return (_rawBits <= fixed._rawBits);
 }
 
 bool	Fixed::operator>=(const Fixed& fixed) const
 {
-	return (_numValue >= fixed._numValue);
+	return (_rawBits >= fixed._rawBits);
 }
 
 bool	Fixed::operator==(const Fixed& fixed) const
 {
-	return (_numValue == fixed._numValue);
+	return (_rawBits == fixed._rawBits);
 }
 
 bool	Fixed::operator!=(const Fixed& fixed) const
 {
-	return (_numValue != fixed._numValue);
+	return (_rawBits != fixed._rawBits);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -98,28 +98,28 @@ bool	Fixed::operator!=(const Fixed& fixed) const
 Fixed	Fixed::operator+(const Fixed& fixed) const {
 	Fixed	newFixed;
 
-	newFixed.setRawBits(this->_numValue + fixed._numValue);
+	newFixed.setRawBits(this->_rawBits + fixed._rawBits);
 	return (newFixed);
 }
 
 Fixed	Fixed::operator-(const Fixed& fixed) const {
 	Fixed	newFixed;
 
-	newFixed.setRawBits(this->_numValue - fixed._numValue);
+	newFixed.setRawBits(this->_rawBits - fixed._rawBits);
 	return (newFixed);
 }
 
 Fixed	Fixed::operator*(const Fixed& fixed) const {
 	Fixed	newFixed;
 	
-	newFixed._numValue = (this->_numValue * fixed._numValue) >> _numOfFractBits;
+	newFixed._rawBits = (this->_rawBits * fixed._rawBits) >> _numOfFractBits;
 	return (newFixed);
 }
 
 Fixed	Fixed::operator/(const Fixed& fixed) const {
 	Fixed	newFixed;
 	
-	newFixed._numValue = (this->_numValue << _numOfFractBits) / fixed._numValue;
+	newFixed._rawBits = (this->_rawBits << _numOfFractBits) / fixed._rawBits;
 	return (newFixed);
 }
 
@@ -127,7 +127,7 @@ Fixed	Fixed::operator/(const Fixed& fixed) const {
 /// pre and post increment and decrement operators
 //////////////////////////////////////////////////////////////////////
 Fixed&	Fixed::operator++() {
-	_numValue++;
+	_rawBits++;
 	return (*this);
 }
 
@@ -138,7 +138,7 @@ Fixed	Fixed::operator++(int ) {
 }
 
 Fixed&	Fixed::operator--() {
-	_numValue--;
+	_rawBits--;
 	return (*this);
 }
 
@@ -155,25 +155,25 @@ int	Fixed::getRawBits() const {
 	#ifdef DEBUG
 	std::cout << "Get raw bits member function called" << std::endl;
 	#endif
-	return (_numValue);
+	return (_rawBits);
 }
 
 void	Fixed::setRawBits(int const raw) {
 	#ifdef DEBUG
 	std::cout << "Set raw bits member function called" << std::endl;
 	#endif
-	_numValue = raw;
+	_rawBits = raw;
 }
 
 //////////////////////////////////////////////////////////////////////
 /// conversions
 //////////////////////////////////////////////////////////////////////
 float	Fixed::toFloat() const {
-	return (static_cast<float>(_numValue) / (1 << _numOfFractBits));
+	return (static_cast<float>(_rawBits) / (1 << _numOfFractBits));
 }
 
 int	Fixed::toInt() const {
-	return (_numValue >> _numOfFractBits);
+	return (_rawBits >> _numOfFractBits);
 }
 
 //////////////////////////////////////////////////////////////////////
